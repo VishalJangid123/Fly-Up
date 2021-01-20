@@ -4,25 +4,23 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
     }
-
-    public GameObject sample_text;
 
     public enum Move
     {
         FIX,
-        UP,
-        DOWN
+        UP = 1,
+        DOWN = -1
     }
 
-    bool shouldMove = false;
-    int direction = 0;
+    [HideInInspector]
+    public bool shouldMove = false;
 
-    // Update is called once per frame
+    [HideInInspector]
+    public int direction = 0;
+
     void Update()
     {
         // detect up
@@ -47,16 +45,10 @@ public class InputManager : MonoBehaviour
 
         }
 
-        if(shouldMove)
-            move(direction);
+        
 
     }
 
-    public void move(int direction)
-    {
-        sample_text.transform.position = Vector3.Lerp(sample_text.transform.position, new Vector3(0,5 * direction,0), 5 * Time.deltaTime);
-        if(sample_text.transform.position.y >= 5f) shouldMove = false;
-        Debug.Log("move called");
-    }
+    
 
 }
