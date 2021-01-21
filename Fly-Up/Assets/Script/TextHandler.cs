@@ -44,6 +44,7 @@ public class TextHandler : MonoBehaviour
     public void resetText()
     {
         _mainText_Transform.localPosition = Vector3.zero;
+        _inputManager.shouldMove = false;
     }
 
     void changeText(string text)

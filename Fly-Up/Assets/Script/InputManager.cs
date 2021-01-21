@@ -35,6 +35,7 @@ public class InputManager : MonoBehaviour
             // move text up
             shouldMove = true;
             direction = (int)Move.UP;
+            Debug.Log("UP key pressed");
             _dataHandler.UpKeyPress();
         }
 
@@ -45,6 +46,8 @@ public class InputManager : MonoBehaviour
             // move text down
             shouldMove = true;
             direction = (int)Move.DOWN;
+            Debug.Log("DOWN key pressed");
+
             _dataHandler.DownKeyPress();
 
 

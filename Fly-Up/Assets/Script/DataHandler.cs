@@ -9,29 +9,37 @@ public class DataHandler : MonoBehaviour
     public float timer = 0f;
     public TMP_Text timer_text;
     public GameObject _mainText;
+    public GameObject GameOverCanvas;
 
     public List<string> _data;
     public List<int> _movement_data;
 
-    float time_provided = 5f;
+    float time_provided = 10f;
     InputManager _inputManager;
 
     public TextHandler _textHandler;
 
     private TextMeshProUGUI _main_text;
-    private int iterindex = 0;
+    public int iterindex = 0;
+
+
+
+    bool game_over = false;
 
     void Start()
     {
+
+        GameOverCanvas.SetActive(false);
+
         timer = time_provided;
 
         _inputManager = this.GetComponent<InputManager>();
         
         _main_text = _mainText.GetComponent<TextMeshProUGUI>();
 
+        //
         _data.Add("Kite");
         _movement_data.Add(1);
-
         _data.Add("Human");
         _movement_data.Add(-1);
         _data.Add("Plane");
@@ -39,6 +47,16 @@ public class DataHandler : MonoBehaviour
         _data.Add("Fish");
         _movement_data.Add(-1);
 
+        _data.Add("Kite");
+        _movement_data.Add(1);
+        _data.Add("Human");
+        _movement_data.Add(-1);
+        _data.Add("Plane");
+        _movement_data.Add(1);
+        _data.Add("Fish");
+        _movement_data.Add(-1);
+
+        //
         _main_text.text = _data[iterindex];
 
     }
@@ -46,6 +64,9 @@ public class DataHandler : MonoBehaviour
 
     void Update()
     {
+        if (game_over)
+            return;
+
         timer -= Time.deltaTime;
 
         // will provide x sec to user to answer
@@ -65,6 +86,7 @@ public class DataHandler : MonoBehaviour
     void ChangeText()
     {
         iterindex = iterindex + 1;
+        Debug.Log("Change text called");
         // reset text
         if (iterindex < _data.Count)
         {
@@ -85,13 +107,14 @@ public class DataHandler : MonoBehaviour
         {
 
             Debug.Log("Up");
-            timer = 0;
+            timer = time_provided;
             ChangeText();
 
         }
         else
         {
             Debug.Log("Wrong up");
+            OnGameOver();
         }
     }
 
@@ -101,12 +124,28 @@ public class DataHandler : MonoBehaviour
         {
 
             Debug.Log("Down");
-            timer = 0;
+            timer = time_provided;
             ChangeText();
         }
         else
         {
-            Debug.Log("Wrong up");
+            Debug.Log("Wrong down");
+            OnGameOver();
         }
+    }
+
+    void OnGameOver()
+    {
+        game_over = true;
+        GameOverCanvas.SetActive(true);
+
+    }
+
+    public void onRestartButtonClicked()
+    {
+        
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        game_over = false;
+        iterindex = 0;
     }
 }
