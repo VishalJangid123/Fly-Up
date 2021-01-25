@@ -30,15 +30,18 @@ public class TextHandler : MonoBehaviour
         {
             moveText(_inputManager.direction);
         }
+
     }
 
     void moveText(int direction)
     {
-        //_mainText_Transform.localPosition = Vector3.Lerp(_mainText_Transform.localPosition, new Vector3(0, Screen.height * direction, 0), 5 * Time.deltaTime);
-        //if (_mainText_Transform.localPosition.y >= Screen.height - 200f && direction == 1)
-        //    _inputManager.shouldMove = false;
-        //if (_mainText_Transform.localPosition.y >= (Screen.height - 200f) * -1 && direction == -1)
-        //    _inputManager.shouldMove = false;
+        _mainText_Transform.localPosition = Vector3.Lerp(_mainText_Transform.localPosition, new Vector3(0, 1400 * direction, 0), 5 * Time.deltaTime);
+
+
+        if (_mainText_Transform.localPosition.y >= 1300 && direction == 1)
+            _inputManager.shouldMove = false;
+        if (_mainText_Transform.localPosition.y <= -1300 && direction == -1)
+            _inputManager.shouldMove = false;
     }
 
     public void resetText()

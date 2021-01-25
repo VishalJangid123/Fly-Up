@@ -2,19 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
+
+
+public enum Menu
+{
+    COUNTDOWN,
+    IN_GAME,
+    GAME_OVER
+}
 
 public class DataHandler : MonoBehaviour
 {
 
     public float timer = 0f;
+    public TMP_Text countdown_text;
     public TMP_Text timer_text;
     public GameObject _mainText;
-    public GameObject GameOverCanvas;
 
     public List<string> _data;
     public List<int> _movement_data;
 
-    float time_provided = 10f;
+    float time_provided = 3f;
     InputManager _inputManager;
 
     public TextHandler _textHandler;
@@ -23,14 +32,29 @@ public class DataHandler : MonoBehaviour
     public int iterindex = 0;
 
 
+    public AudioClip click_sound;
+    
 
-    bool game_over = false;
+    [HideInInspector]
+    public bool game_over = false;
+    public bool isCountdownDone = false;
+
+    float countdown = 3f;
+
+    List<PanelController> _panelController;
 
     void Start()
     {
 
-        GameOverCanvas.SetActive(false);
+        _panelController = FindObjectsOfType<PanelController>().ToList();
+        
+        foreach(var panel in _panelController)
+        {
+            panel.gameObject.SetActive(false);
 
+        }
+
+        PanelSwitch(Menu.COUNTDOWN);
         timer = time_provided;
 
         _inputManager = this.GetComponent<InputManager>();
@@ -59,34 +83,65 @@ public class DataHandler : MonoBehaviour
         //
         _main_text.text = _data[iterindex];
 
+        // set audioclip to click for countdown to audiosource
+        GameManager.instance._audioSource.clip = click_sound;
+        StartCoroutine(countDown(countdown));
     }
 
+    IEnumerator countDown(float seconds)
+    {
+        while(seconds > -1)
+        {
+            if(seconds == 0) countdown_text.text = "Start";
+            else countdown_text.text = seconds.ToString();
+            
+            GameManager.instance._audioSource.Play();
+            countdown_text.gameObject.GetComponent<Lean.Transition.Extras.LeanAnimation>().BeginTransitions();
+            yield return new WaitForSeconds(1.0f);
+            seconds--;
+        }
+        isCountdownDone = true;
+    }
 
     void Update()
     {
         if (game_over)
             return;
 
-        timer -= Time.deltaTime;
-
-        // will provide x sec to user to answer
-        if( timer <= 0f)
+        if (isCountdownDone == false)
         {
-            //reset timer
-            timer = time_provided;
-            ChangeText();
-
+            
         }
+        else
+        {
+            PanelSwitch(Menu.IN_GAME);
 
-        
 
-        updateTimer(timer);
+
+            timer -= Time.deltaTime;
+
+            // will provide x sec to user to answer
+            if (timer <= 0f)
+            {
+                //check if user has given some answer or not
+
+
+                //reset timer
+                OnGameOver();
+                //timer = time_provided;
+                //ChangeText();
+
+            }
+
+
+
+            updateTimer(timer);
+        }
     }
 
     void ChangeText()
     {
         iterindex = iterindex + 1;
-        Debug.Log("Change text called");
         // reset text
         if (iterindex < _data.Count)
         {
@@ -118,6 +173,7 @@ public class DataHandler : MonoBehaviour
         }
     }
 
+
     public void DownKeyPress()
     {
         if (iterindex <= _data.Count && _movement_data[iterindex] == -1)
@@ -137,15 +193,43 @@ public class DataHandler : MonoBehaviour
     void OnGameOver()
     {
         game_over = true;
-        GameOverCanvas.SetActive(true);
+        PanelSwitch(Menu.GAME_OVER);
 
     }
 
     public void onRestartButtonClicked()
     {
         
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
+        game_over = false;
+        iterindex = 0;
+        isCountdownDone = false;
+        StartCoroutine(countDown(countdown));
+    }
+
+
+    public void onMainMenuButtonClicked()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("StartScene");
         game_over = false;
         iterindex = 0;
     }
+
+
+
+    void PanelSwitch(Menu menu)
+    {
+        foreach (var panel in _panelController)
+        {
+            if (panel._panel == menu)
+            {
+                panel.gameObject.SetActive(true);
+            }
+            else
+            {
+                panel.gameObject.SetActive(false);
+            }
+        }
+    }
+
 }

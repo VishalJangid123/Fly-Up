@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour
     void Update()
     {
         // detect up
-
+        if (_dataHandler.game_over || !_dataHandler.isCountdownDone) return;
         
 
 
@@ -36,7 +36,7 @@ public class InputManager : MonoBehaviour
             shouldMove = true;
             direction = (int)Move.UP;
             Debug.Log("UP key pressed");
-            _dataHandler.UpKeyPress();
+            StartCoroutine(delayAction(true));
         }
 
         // detect down
@@ -48,13 +48,28 @@ public class InputManager : MonoBehaviour
             direction = (int)Move.DOWN;
             Debug.Log("DOWN key pressed");
 
-            _dataHandler.DownKeyPress();
+            StartCoroutine(delayAction(false));
 
 
         }
 
 
 
+    }
+
+    IEnumerator delayAction(bool isUp)
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (isUp)
+        {
+            _dataHandler.UpKeyPress();
+
+        }
+        else
+        {
+            _dataHandler.DownKeyPress();
+
+        }
     }
 
     
